@@ -15,9 +15,9 @@ CONF_TANK_TYPE_STD = "standard"
 # HEIGHT in MM
 #
 CONF_SUPPORTED_STD_TANKS = {
-  "20lb_v": { "MAX_HEIGHT": 452.12 }
-  "30lb_v": { "MAX_HEIGHT": 601.98 }
-  "40lb_v": { "MAX_HEIGHT": 744.22 }
+    "20lb_v": {"MAX_HEIGHT": 452.12},
+    "30lb_v": {"MAX_HEIGHT": 601.98},
+    "40lb_v": {"MAX_HEIGHT": 744.22},
 }
 
 DOMAIN = "mopeka_pro_check"
@@ -36,4 +36,3 @@ CONF_STD_TANK = "std_tank"
 DEFAULT_SCAN_INTERVAL = 60
 DEFAULT_HCI_DEVICE = "hci0"
 DEFAULT_STD_TANK = "20lb_v"
-

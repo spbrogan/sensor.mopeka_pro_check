@@ -25,7 +25,7 @@ from homeassistant.const import (  # type: ignore
     CONF_MAC,
     CONF_NAME,
     CONF_SCAN_INTERVAL,
-    PERCENTAGE
+    PERCENTAGE,
 )
 
 from .const import (
@@ -40,7 +40,7 @@ from .const import (
     CONF_TANK_TYPE_CUSTOM,
     CONF_TANK_TYPE_STD,
     CONF_STD_TANK,
-    DOMAIN
+    DOMAIN,
 )
 
 ###############################################################################
@@ -52,18 +52,20 @@ DEVICES_SCHEMA = vol.Schema(
         vol.Required(CONF_MAC): cv.string,
         vol.Optional(CONF_NAME): cv.string,
         vol.Optional(CONF_TANK_TYPE, default=CONF_TANK_TYPE_STD): cv.string,
-        vol.Exclusive(CONF_TANK_TYPE_CUSTOM, CONF_TANK_TYPE):{
-            Required(CONF_TANK_MAX_HEIGHT):cv.positive_float
-        },
-        vol.Exclusive(CONF_TANK_TYPE_STD, CONF_TANK_TYPE): {
-            In(CONF_STD_TANK, CONF_SUPPORTED_STD_TANKS.keys())
-        }
+        #vol.Exclusive(CONF_TANK_TYPE_CUSTOM, CONF_TANK_TYPE): {
+        #    Required(CONF_TANK_MAX_HEIGHT): cv.positive_float
+        #},
+        #vol.Exclusive(CONF_TANK_TYPE_STD, CONF_TANK_TYPE): {
+        #    In(CONF_STD_TANK, CONF_SUPPORTED_STD_TANKS.keys())
+        #},
     }
 )
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
     {
-        vol.Optional(CONF_SCAN_INTERVAL, default=DEFAULT_SCAN_INTERVAL): cv.positive_int,
+        vol.Optional(
+            CONF_SCAN_INTERVAL, default=DEFAULT_SCAN_INTERVAL
+        ): cv.positive_int,
         vol.Optional(CONF_MOPEKA_DEVICES): vol.All([DEVICES_SCHEMA]),
         vol.Optional(CONF_HCI_DEVICE, default=DEFAULT_HCI_DEVICE): cv.string,
     }
@@ -97,32 +99,40 @@ def setup_platform(hass, config, add_entities, discovery_info=None) -> None:
             tt = conf_dev.get(CONF_TANK_TYPE, CONF_STD_TANK)
             if tt == CONF_TANK_TYPE_CUSTOM:
                 # if max height missing uses 20 lbs vertical tank
-                device.height = float(conf_dev.get(CONF_TANK_MAX_HEIGHT, CONF_SUPPORTED_STD_TANKS[DEFAULT_STD_TANK].get("MAX_HEIGHT")))
-                getattr(sensor, "_device_state_attributes")[CONF_STD_TANK] = "n/a"
+                device.height = float(
+                    conf_dev.get(
+                        CONF_TANK_MAX_HEIGHT,
+                        CONF_SUPPORTED_STD_TANKS[DEFAULT_STD_TANK].get("MAX_HEIGHT"),
+                    )
+                )
+                getattr(tank_sensor, "_device_state_attributes")[CONF_STD_TANK] = "n/a"
             else:
                 tt = CONF_TANK_TYPE_STD
                 std_type = conf_dev.get(CONF_STD_TANK, DEFAULT_STD_TANK)
                 device.height = CONF_SUPPORTED_STD_TANKS[std_type].get("MAX_HEIGHT")
-                getattr(sensor, "_device_state_attributes")[CONF_STD_TANK] = std_type
+                getattr(tank_sensor, "_device_state_attributes")[
+                    CONF_STD_TANK
+                ] = std_type
 
-            getattr(sensor, "_device_state_attributes")[CONF_TANK_TYPE] = tt
-            getattr(sensor, "_device_state_attributes")["tank_height"] = device.height
+            getattr(tank_sensor, "_device_state_attributes")[CONF_TANK_TYPE] = tt
+            getattr(tank_sensor, "_device_state_attributes")[
+                "tank_height"
+            ] = device.height
 
             service.AddSensorToMonitor(device)
-            add_entities(tank_sensor)
+            add_entities((tank_sensor,))
 
     def update_ble_devices(config) -> None:
         """Discover Bluetooth LE devices."""
         # _LOGGER.debug("Discovering Bluetooth LE devices")
 
-
         ATTR = "_device_state_attributes"
 
-        for device in service.SensorMonitoredList:
+        for device in service.SensorMonitoredList.values():
             sensor = device.ha_sensor
             ma = device.GetReading()
             if ma != None:
-                sensor._tank_level = (ma.TankLevelInMM * 100.0 )/device.height
+                sensor._tank_level = (ma.TankLevelInMM * 100.0) / device.height
                 getattr(sensor, ATTR)["rssi"] = ma.BatteryPercent
                 getattr(sensor, ATTR)["confidence_score"] = ma.ReadingQualityStars
                 getattr(sensor, ATTR)["temp_c"] = ma.TemperatureInCelsius
@@ -139,7 +149,7 @@ def setup_platform(hass, config, add_entities, discovery_info=None) -> None:
         except RuntimeError as error:
             _LOGGER.error("Error during Bluetooth LE scan: %s", error)
 
-        time_offset = dt_util.utcnow() + timedelta(seconds=config[CONF_PERIOD])
+        time_offset = dt_util.utcnow() + timedelta(seconds=config[CONF_SCAN_INTERVAL])
         # update_ble_loop() will be called again after time_offset
         track_point_in_utc_time(hass, update_ble_loop, time_offset)
 
@@ -211,4 +221,3 @@ class TankLevelSensor(Entity):
     def force_update(self) -> bool:
         """Force update."""
         return True
-
