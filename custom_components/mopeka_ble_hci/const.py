@@ -1,0 +1,37 @@
+"""Constants for the Mopeka Propane Tank Level Sensor BLE Home Assistant Component
+
+Copyright (c) 2021 Sean Brogan
+Copyright (c) 2020 Home-Is-Where-You-Hang-Your-Hack
+
+SPDX-License-Identifier: MIT
+
+"""
+
+DOMAIN = "mopeka"
+
+# Configuration options
+CONF_HCI_DEVICE = "hci_device"
+CONF_MOPEKA_DEVICES = "mopeka_devices"
+CONF_TANK_TYPE = "tank_type"
+CONF_TANK_MAX_HEIGHT = "max_height"
+CONF_STD_TANK = "std_tank"
+
+# use CONF_MAC, CONF_NAME, CONF_SCAN_INTERVAL
+
+
+# Default values for configuration options
+DEFAULT_SCAN_INTERVAL = 60
+DEFAULT_HCI_DEVICE = "hci0"
+
+"""Fixed constants."""
+
+CONF_TANK_TYPE_CUSTOM = "custom"
+CONF_TANK_TYPE_STD = "standard"
+#
+# HEIGHT in MM
+#
+CONF_SUPPORTED_TANKS = {
+  "20lb_v": { "MAX_HEIGHT": 452.12 }
+  "30lb_v": { "MAX_HEIGHT": 601.98 }
+  "40lb_v": { "MAX_HEIGHT": 744.22 }
+}
