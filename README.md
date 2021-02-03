@@ -12,8 +12,8 @@ A custom component for [Home Assistant](https://www.home-assistant.io) that list
 
 * The easiest way is to install it with [HACS](https://hacs.xyz/). First install [HACS](https://hacs.xyz/) if you don't have it yet. After installation, the custom component can be found in the HACS store under integrations.
 
-* Alternatively, you can install it manually. Just copy paste the content of the `sensor.mopeka_bt_hci/custom_components` folder in your `config/custom_components` directory.
-     As example, you will get the `sensor.py` file in the following path: `/config/custom_components/mopeka_ble_hci/sensor.py`.
+* Alternatively, you can install it manually. Just copy paste the content of the `sensor.mopeka_pro_check/custom_components` folder in your `config/custom_components` directory.
+     As example, you will get the `sensor.py` file in the following path: `/config/custom_components/mopeka_pro_check/sensor.py`.
 
 **2. Restart Home Assistant:**
 
@@ -33,20 +33,20 @@ are shipped from the factory in a low power mode and will need to be woken up to
 ## Troubleshooting and help
 
 This is still a work in progress with very limited testing.
-Please use github issues and PRs to provide feedback, open issues, or ask questions.
+Please use github issues, pull requests, and discussion to provide feedback, open issues, or ask questions.
 I am new to developing for HomeAssistant so for general questions or system questions using
 the home assistant forums would be better.  Eventually it looks like most add a community post
 and i will do so once this component works or is in shape for sharing.
 
 ## Configuration Variables
 
-Specify the sensor platform `mopeka_ble_hci` and a list of devices with unique MAC address.
+Specify the sensor platform `mopeka_pro_check` and a list of devices with unique MAC address.
 
 *NOTE*: device name is optional.  If not provided, devices will be labeled using the MAC address
 
 ``` yaml
 sensor:
-  - platform: mopeka_ble_hci
+  - platform: mopeka_pro_check
     mopeka_devices:
       # Just use default tank type
       - mac: "A1:B2:C3:D4:E5:F6"
@@ -69,7 +69,6 @@ sensor:
 | Option | Type |Default Value | Description |  
 | -- | -- | -- | -- |
 | `period` | positive integer | `60` | The period in seconds during which the sensor readings are collected and transmitted to Home Assistant after averaging. The Mopeka device broadcast rate is configurable using the sensor buttons but this period helps to limit the amount of mostly duplicate data stored in  Home Assistant's database since tank level should not change that quickly |
-| `log_spikes` |  Boolean | `False` | Puts information about each erroneous spike in the Home Assistant log. |
 | `hci_device`| string | `hci0` | HCI device name used for scanning. |
 
 ## Credits

@@ -7,7 +7,20 @@ SPDX-License-Identifier: MIT
 
 """
 
-DOMAIN = "mopeka"
+"""Fixed constants."""
+
+CONF_TANK_TYPE_CUSTOM = "custom"
+CONF_TANK_TYPE_STD = "standard"
+#
+# HEIGHT in MM
+#
+CONF_SUPPORTED_STD_TANKS = {
+  "20lb_v": { "MAX_HEIGHT": 452.12 }
+  "30lb_v": { "MAX_HEIGHT": 601.98 }
+  "40lb_v": { "MAX_HEIGHT": 744.22 }
+}
+
+DOMAIN = "mopeka_pro_check"
 
 # Configuration options
 CONF_HCI_DEVICE = "hci_device"
@@ -22,16 +35,5 @@ CONF_STD_TANK = "std_tank"
 # Default values for configuration options
 DEFAULT_SCAN_INTERVAL = 60
 DEFAULT_HCI_DEVICE = "hci0"
+DEFAULT_STD_TANK = "20lb_v"
 
-"""Fixed constants."""
-
-CONF_TANK_TYPE_CUSTOM = "custom"
-CONF_TANK_TYPE_STD = "standard"
-#
-# HEIGHT in MM
-#
-CONF_SUPPORTED_TANKS = {
-  "20lb_v": { "MAX_HEIGHT": 452.12 }
-  "30lb_v": { "MAX_HEIGHT": 601.98 }
-  "40lb_v": { "MAX_HEIGHT": 744.22 }
-}
