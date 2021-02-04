@@ -29,6 +29,7 @@ from homeassistant.const import (  # type: ignore
 )
 
 from .const import (
+    CONF_SUPPORTED_STD_TANK_NAMES, 
     DEFAULT_SCAN_INTERVAL,
     DEFAULT_HCI_DEVICE,
     DEFAULT_STD_TANK,
@@ -36,10 +37,10 @@ from .const import (
     CONF_MOPEKA_DEVICES,
     CONF_TANK_TYPE,
     CONF_TANK_MAX_HEIGHT,
-    CONF_SUPPORTED_STD_TANKS,
+    CONF_SUPPORTED_STD_TANKS_MAP,
     CONF_TANK_TYPE_CUSTOM,
     CONF_TANK_TYPE_STD,
-    CONF_STD_TANK,
+    CONF_TANK_FIELD,
     DOMAIN,
 )
 
@@ -51,13 +52,9 @@ DEVICES_SCHEMA = vol.Schema(
     {
         vol.Required(CONF_MAC): cv.string,
         vol.Optional(CONF_NAME): cv.string,
-        vol.Optional(CONF_TANK_TYPE, default=CONF_TANK_TYPE_STD): cv.string,
-        #vol.Exclusive(CONF_TANK_TYPE_CUSTOM, CONF_TANK_TYPE): {
-        #    Required(CONF_TANK_MAX_HEIGHT): cv.positive_float
-        #},
-        #vol.Exclusive(CONF_TANK_TYPE_STD, CONF_TANK_TYPE): {
-        #    In(CONF_STD_TANK, CONF_SUPPORTED_STD_TANKS.keys())
-        #},
+        vol.Optional(CONF_TANK_TYPE, default=CONF_TANK_TYPE_STD): vol.In((CONF_TANK_TYPE_STD, CONF_TANK_TYPE_CUSTOM)),
+        vol.Optional(CONF_TANK_FIELD, default=DEFAULT_STD_TANK): vol.In(CONF_SUPPORTED_STD_TANK_NAMES),
+        vol.Optional(CONF_TANK_MAX_HEIGHT): cv.positive_float
     }
 )
 
@@ -87,37 +84,32 @@ def setup_platform(hass, config, add_entities, discovery_info=None) -> None:
         """Initialize configured mopeka devices."""
         for conf_dev in config[CONF_MOPEKA_DEVICES]:
             # Initialize sensor object
-            mac = conf_dev["mac"]
+            mac = conf_dev[CONF_MAC]
             device = MopekaSensor(mac)
-            device.name = conf_dev.get("name", mac)
+            device.name = conf_dev.get(CONF_NAME, mac)
 
             # Initialize HA sensors
             tank_sensor = TankLevelSensor(device._mac, device.name)
             device.ha_sensor = tank_sensor
 
-            # find tank - if not there then assume STD
-            tt = conf_dev.get(CONF_TANK_TYPE, CONF_STD_TANK)
+            # find tank type
+            tt = conf_dev.get(CONF_TANK_TYPE)
             if tt == CONF_TANK_TYPE_CUSTOM:
                 # if max height missing uses 20 lbs vertical tank
                 device.height = float(
                     conf_dev.get(
                         CONF_TANK_MAX_HEIGHT,
-                        CONF_SUPPORTED_STD_TANKS[DEFAULT_STD_TANK].get("MAX_HEIGHT"),
+                        CONF_SUPPORTED_STD_TANKS_MAP[DEFAULT_STD_TANK].get(CONF_TANK_MAX_HEIGHT),
                     )
                 )
-                getattr(tank_sensor, "_device_state_attributes")[CONF_STD_TANK] = "n/a"
+                getattr(tank_sensor, "_device_state_attributes")[CONF_TANK_FIELD] = "n/a"
             else:
-                tt = CONF_TANK_TYPE_STD
-                std_type = conf_dev.get(CONF_STD_TANK, DEFAULT_STD_TANK)
-                device.height = CONF_SUPPORTED_STD_TANKS[std_type].get("MAX_HEIGHT")
-                getattr(tank_sensor, "_device_state_attributes")[
-                    CONF_STD_TANK
-                ] = std_type
+                std_type = conf_dev.get(CONF_TANK_FIELD)
+                device.height = CONF_SUPPORTED_STD_TANKS_MAP[std_type].get(CONF_TANK_MAX_HEIGHT)
+                getattr(tank_sensor, "_device_state_attributes")[CONF_TANK_FIELD] = std_type
 
             getattr(tank_sensor, "_device_state_attributes")[CONF_TANK_TYPE] = tt
-            getattr(tank_sensor, "_device_state_attributes")[
-                "tank_height"
-            ] = device.height
+            getattr(tank_sensor, "_device_state_attributes")["tank_height"] = device.height
 
             service.AddSensorToMonitor(device)
             add_entities((tank_sensor,))
@@ -132,11 +124,13 @@ def setup_platform(hass, config, add_entities, discovery_info=None) -> None:
             sensor = device.ha_sensor
             ma = device.GetReading()
             if ma != None:
-                sensor._tank_level = (ma.TankLevelInMM * 100.0) / device.height
+                sensor._tank_level = round(((ma.TankLevelInMM * 100.0) / device.height), 1)
                 getattr(sensor, ATTR)["rssi"] = ma.BatteryPercent
                 getattr(sensor, ATTR)["confidence_score"] = ma.ReadingQualityStars
                 getattr(sensor, ATTR)["temp_c"] = ma.TemperatureInCelsius
+                getattr(sensor, ATTR)["temp_f"] = ma.TemperatureInFahrenheit
                 getattr(sensor, ATTR)[ATTR_BATTERY_LEVEL] = ma.BatteryPercent
+                getattr(sensor, ATTR)["tank_level_mm"] = ma.ma.TankLevelInMM
                 sensor.async_schedule_update_ha_state()
 
     def update_ble_loop(now) -> None:
@@ -216,8 +210,13 @@ class TankLevelSensor(Entity):
     def unique_id(self) -> str:
         """Return a unique ID."""
         return self._unique_id
+    
+    @property
+    def available(self) -> bool:
+        """ is the sensor available """
+        return (self._tank_level is not None)
 
     @property
-    def force_update(self) -> bool:
-        """Force update."""
-        return True
+    def icon(self):
+        return "mdi:propane-tank"
+
