@@ -130,7 +130,7 @@ def setup_platform(hass, config, add_entities, discovery_info=None) -> None:
                 getattr(sensor, ATTR)["temp_c"] = ma.TemperatureInCelsius
                 getattr(sensor, ATTR)["temp_f"] = ma.TemperatureInFahrenheit
                 getattr(sensor, ATTR)[ATTR_BATTERY_LEVEL] = ma.BatteryPercent
-                getattr(sensor, ATTR)["tank_level_mm"] = ma.ma.TankLevelInMM
+                getattr(sensor, ATTR)["tank_level_mm"] = ma.TankLevelInMM
                 sensor.async_schedule_update_ha_state()
 
     def update_ble_loop(now) -> None:
