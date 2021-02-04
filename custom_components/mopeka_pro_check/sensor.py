@@ -29,7 +29,7 @@ from homeassistant.const import (  # type: ignore
 )
 
 from .const import (
-    CONF_SUPPORTED_STD_TANK_NAMES, 
+    CONF_SUPPORTED_STD_TANK_NAMES,
     DEFAULT_SCAN_INTERVAL,
     DEFAULT_HCI_DEVICE,
     DEFAULT_STD_TANK,
@@ -125,7 +125,7 @@ def setup_platform(hass, config, add_entities, discovery_info=None) -> None:
             ma = device.GetReading()
             if ma != None:
                 sensor._tank_level = round(((ma.TankLevelInMM * 100.0) / device.height), 1)
-                getattr(sensor, ATTR)["rssi"] = ma.BatteryPercent
+                getattr(sensor, ATTR)["rssi"] = ma.rssi
                 getattr(sensor, ATTR)["confidence_score"] = ma.ReadingQualityStars
                 getattr(sensor, ATTR)["temp_c"] = ma.TemperatureInCelsius
                 getattr(sensor, ATTR)["temp_f"] = ma.TemperatureInFahrenheit
@@ -210,7 +210,7 @@ class TankLevelSensor(Entity):
     def unique_id(self) -> str:
         """Return a unique ID."""
         return self._unique_id
-    
+
     @property
     def available(self) -> bool:
         """ is the sensor available """
