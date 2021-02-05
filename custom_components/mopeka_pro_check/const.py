@@ -24,9 +24,11 @@ CONF_TANK_TYPE_STD = "standard"
 # HEIGHT in MM
 #
 CONF_SUPPORTED_STD_TANKS_MAP = {
-    "20lb_v": {CONF_TANK_MAX_HEIGHT: 452.12},
-    "30lb_v": {CONF_TANK_MAX_HEIGHT: 601.98},
-    "40lb_v": {CONF_TANK_MAX_HEIGHT: 744.22},
+    # Map these at about 67% of the tank height which seems like
+    # 100% tank full
+    "20lb_v": {CONF_TANK_MAX_HEIGHT: 302.84},   #452.12},  
+    "30lb_v": {CONF_TANK_MAX_HEIGHT: 403.32},   #601.98},  
+    "40lb_v": {CONF_TANK_MAX_HEIGHT: 498.62}    #744.22},
 }
 
 CONF_SUPPORTED_STD_TANK_NAMES = tuple(CONF_SUPPORTED_STD_TANKS_MAP.keys())
