@@ -24,10 +24,11 @@ CONF_TANK_TYPE_STD = "standard"
 # HEIGHT in MM
 #
 CONF_SUPPORTED_STD_TANKS_MAP = {
-    # Map these at about 67% of the tank height which seems like
-    # 100% tank full
+    # Where to get real answers for what height is full
+
+    # trial and error and compare with Mopeka official app
     "20lb_v": {CONF_TANK_MAX_HEIGHT: 302.84},   #452.12},  
-    "30lb_v": {CONF_TANK_MAX_HEIGHT: 403.32},   #601.98},  
+    "30lb_v": {CONF_TANK_MAX_HEIGHT: 410.0},   #601.98},  
     "40lb_v": {CONF_TANK_MAX_HEIGHT: 498.62}    #744.22},
 }
 
