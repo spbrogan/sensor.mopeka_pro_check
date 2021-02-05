@@ -9,7 +9,7 @@ SPDX-License-Identifier: MIT
 from datetime import timedelta
 import logging
 import voluptuous as vol
-from typing import List
+from typing import List, Callable
 
 from mopeka_pro_check.service import MopekaService, GetServiceInstance
 from mopeka_pro_check.sensor import MopekaSensor
@@ -19,6 +19,11 @@ import homeassistant.helpers.config_validation as cv  # type: ignore
 from homeassistant.helpers.entity import Entity  # type: ignore
 from homeassistant.helpers.event import track_point_in_utc_time  # type: ignore
 import homeassistant.util.dt as dt_util  # type: ignore
+from homeassistant.helpers.typing import (
+    ConfigType,
+    DiscoveryInfoType,
+    HomeAssistantType,
+)
 
 from homeassistant.const import (  # type: ignore
     ATTR_BATTERY_LEVEL,
@@ -52,9 +57,13 @@ DEVICES_SCHEMA = vol.Schema(
     {
         vol.Required(CONF_MAC): cv.string,
         vol.Optional(CONF_NAME): cv.string,
-        vol.Optional(CONF_TANK_TYPE, default=CONF_TANK_TYPE_STD): vol.In((CONF_TANK_TYPE_STD, CONF_TANK_TYPE_CUSTOM)),
-        vol.Optional(CONF_TANK_FIELD, default=DEFAULT_STD_TANK): vol.In(CONF_SUPPORTED_STD_TANK_NAMES),
-        vol.Optional(CONF_TANK_MAX_HEIGHT): cv.positive_float
+        vol.Optional(CONF_TANK_TYPE, default=CONF_TANK_TYPE_STD): vol.In(
+            (CONF_TANK_TYPE_STD, CONF_TANK_TYPE_CUSTOM)
+        ),
+        vol.Optional(CONF_TANK_FIELD, default=DEFAULT_STD_TANK): vol.In(
+            CONF_SUPPORTED_STD_TANK_NAMES
+        ),
+        vol.Optional(CONF_TANK_MAX_HEIGHT): cv.positive_float,
     }
 )
 
@@ -74,7 +83,12 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
 #
 # Configure for Home Assistant
 #
-def setup_platform(hass, config, add_entities, discovery_info=None) -> None:
+def setup_platform(
+    hass: HomeAssistantType,
+    config: ConfigType,
+    add_entities: Callable,
+    discovery_info: Optional[DiscoveryInfoType] = None,
+) -> None:
     """Set up the sensor platform."""
     _LOGGER.debug("Starting Mopeka Tank Level Sensor")
 
@@ -99,17 +113,27 @@ def setup_platform(hass, config, add_entities, discovery_info=None) -> None:
                 device.height = float(
                     conf_dev.get(
                         CONF_TANK_MAX_HEIGHT,
-                        CONF_SUPPORTED_STD_TANKS_MAP[DEFAULT_STD_TANK].get(CONF_TANK_MAX_HEIGHT),
+                        CONF_SUPPORTED_STD_TANKS_MAP[DEFAULT_STD_TANK].get(
+                            CONF_TANK_MAX_HEIGHT
+                        ),
                     )
                 )
-                getattr(tank_sensor, "_device_state_attributes")[CONF_TANK_FIELD] = "n/a"
+                getattr(tank_sensor, "_device_state_attributes")[
+                    CONF_TANK_FIELD
+                ] = "n/a"
             else:
                 std_type = conf_dev.get(CONF_TANK_FIELD)
-                device.height = CONF_SUPPORTED_STD_TANKS_MAP[std_type].get(CONF_TANK_MAX_HEIGHT)
-                getattr(tank_sensor, "_device_state_attributes")[CONF_TANK_FIELD] = std_type
+                device.height = CONF_SUPPORTED_STD_TANKS_MAP[std_type].get(
+                    CONF_TANK_MAX_HEIGHT
+                )
+                getattr(tank_sensor, "_device_state_attributes")[
+                    CONF_TANK_FIELD
+                ] = std_type
 
             getattr(tank_sensor, "_device_state_attributes")[CONF_TANK_TYPE] = tt
-            getattr(tank_sensor, "_device_state_attributes")["tank_height"] = device.height
+            getattr(tank_sensor, "_device_state_attributes")[
+                "tank_height"
+            ] = device.height
 
             service.AddSensorToMonitor(device)
             add_entities((tank_sensor,))
@@ -124,7 +148,9 @@ def setup_platform(hass, config, add_entities, discovery_info=None) -> None:
             sensor = device.ha_sensor
             ma = device.GetReading()
             if ma != None:
-                sensor._tank_level = min( (round(((ma.TankLevelInMM * 100.0) / device.height), 1), 100.0))
+                sensor._tank_level = min(
+                    (round(((ma.TankLevelInMM * 100.0) / device.height), 1), 100.0)
+                )
                 getattr(sensor, ATTR)["rssi"] = ma.rssi
                 getattr(sensor, ATTR)["confidence_score"] = ma.ReadingQualityStars
                 getattr(sensor, ATTR)["temp_c"] = ma.TemperatureInCelsius
@@ -214,9 +240,8 @@ class TankLevelSensor(Entity):
     @property
     def available(self) -> bool:
         """ is the sensor available """
-        return (self._tank_level is not None)
+        return self._tank_level is not None
 
     @property
     def icon(self):
         return "mdi:propane-tank"
-

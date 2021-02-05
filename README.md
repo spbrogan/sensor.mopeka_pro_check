@@ -1,4 +1,5 @@
 # sensor.mopeka_pro_check
+
 Home Assistant custom component to support Mopeka Pro Check Tank Level Sensors
 A custom component for [Home Assistant](https://www.home-assistant.io) that listens for the advertisement message broadcast by Mopeka Bluetooth propane tank level sensors.
 
@@ -67,7 +68,7 @@ sensor:
 
 | Option | Type |Default Value | Description |  
 | -- | -- | -- | -- |
-| `scan_interval` | positive integer | `60` | The scan_interval in seconds during which the sensor readings are collected and transmitted to Home Assistant after averaging. The Mopeka device broadcast rate is configurable using the sensor buttons but this scan_interval helps to limit the amount of mostly duplicate data stored in  Home Assistant's database since tank level should not change that quickly |
+| `scan_interval` | positive integer | `60` | The scan_interval in seconds during which the sensor readings are collected and transmitted to Home Assistant. The Mopeka device broadcast rate is configurable using the sensor buttons but this scan_interval helps to limit the amount of mostly duplicate data stored in  Home Assistant's database since tank level should not change that quickly |
 | `hci_device`| string | `hci0` | HCI device name used for scanning. |
 
 ## Credits
