@@ -23,7 +23,7 @@ A custom component for [Home Assistant](https://www.home-assistant.io) that list
 
 **4. Restart Home Assistant:**
 
-* A second restart may be required to load the configuration. Within a few minutes, the sensors should be added to your home-assistant automatically (at least two [period](#period) may be required.  If the [period](#period) is set to a time greater than two minutes, at least four [period](#period) may be required).
+* A second restart may be required to load the configuration. Within a few minutes, the sensors should be added to your home-assistant automatically (at least two `scan_interval` may be required.  If the `scan_interval` is set to a time greater than two minutes, at least four `scan_interval` may be required).
 
 * Make sure you have woken up the sensor by following the directions supplied with your sensor.  Sensors
 are shipped from the factory in a low power mode and will need to be woken up to start reporting.
@@ -55,20 +55,19 @@ sensor:
       - mac: "A6:B5:C4:D3:E2:F1"
         name: RV Left Tank
         tank_type: "standard"
-        std_tank: "20lb_v"
+        tank: "20lb_v"
       # Set the max height in MM using custom tank 
       - mac: "A0:B0:C0:D0:E0:F0"
         name: BBQ
         tank_type: "custom"
         max_height: 452.10
-        
 ```
 
 ### Additional configuration options
 
 | Option | Type |Default Value | Description |  
 | -- | -- | -- | -- |
-| `period` | positive integer | `60` | The period in seconds during which the sensor readings are collected and transmitted to Home Assistant after averaging. The Mopeka device broadcast rate is configurable using the sensor buttons but this period helps to limit the amount of mostly duplicate data stored in  Home Assistant's database since tank level should not change that quickly |
+| `scan_interval` | positive integer | `60` | The scan_interval in seconds during which the sensor readings are collected and transmitted to Home Assistant after averaging. The Mopeka device broadcast rate is configurable using the sensor buttons but this scan_interval helps to limit the amount of mostly duplicate data stored in  Home Assistant's database since tank level should not change that quickly |
 | `hci_device`| string | `hci0` | HCI device name used for scanning. |
 
 ## Credits
