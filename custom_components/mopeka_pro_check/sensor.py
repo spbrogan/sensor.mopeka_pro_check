@@ -9,7 +9,7 @@ SPDX-License-Identifier: MIT
 from datetime import timedelta
 import logging
 import voluptuous as vol
-from typing import List, Callable
+from typing import List, Callable, Optional
 
 from mopeka_pro_check.service import MopekaService, GetServiceInstance
 from mopeka_pro_check.sensor import MopekaSensor
