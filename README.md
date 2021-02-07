@@ -1,5 +1,7 @@
 # sensor.mopeka_pro_check
 
+[![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/custom-components/hacs)
+
 Home Assistant custom component to support Mopeka Pro Check Tank Level Sensors
 A custom component for [Home Assistant](https://www.home-assistant.io) that listens for the advertisement message broadcast by Mopeka Bluetooth propane tank level sensors.
 
@@ -79,13 +81,13 @@ That repo also mentions
 
 >This was originally based on/shamelessly copied from [custom-components/sensor.mitemp_bt](https://github.com/custom-components/sensor.mitemp_bt).  I want to thank [@tsymbaliuk](https://community.home-assistant.io/u/tsymbaliuk) and [@Magalex](https://community.home-assistant.io/u/Magalex) for providing a blueprint for developing my Home Assistant component.
 
-So I want to thank the work of [@Thrilleratplay](https://community.home-assistant.io/u/thrilleratplay) as well as those mentioned above.  
+So I want to thank [@Thrilleratplay](https://community.home-assistant.io/u/thrilleratplay) as well as those mentioned above.  
 
-Finally, [Mopeka Products](https://mopeka.com/) was extremely helpful.  There support has been great and the short time I have used their sensor I have been happy with its capability. I would recommend their sensor.
+Finally, [Mopeka Products](https://mopeka.com/) was extremely helpful.  Their support has been great and the short time I have used their sensor I have been happy with its capability. I would recommend their sensor.
 
 ## Notices
 
-Since this is a copy of [custom-components/sensor.mitemp_bt](https://github.com/custom-components/sensor.mitemp_bt) many components will retain that projects copyright.
+Since some parts of this were copied from [custom-components/sensor.mitemp_bt](https://github.com/custom-components/sensor.mitemp_bt) some components will retain that projects copyright.
 
 ``` txt
 MIT License
