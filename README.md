@@ -71,7 +71,7 @@ sensor:
 | Option | Type |Default Value | Description |  
 | -- | -- | -- | -- |
 | `scan_interval` | positive integer | `60` | The scan_interval in seconds during which the sensor readings are collected and transmitted to Home Assistant. The Mopeka device broadcast rate is configurable using the sensor buttons but this scan_interval helps to limit the amount of mostly duplicate data stored in  Home Assistant's database since tank level should not change that quickly |
-| `hci_device`| string | `hci0` | HCI device name used for scanning. |
+| `hci_device`| string | `hci0` | HCI device name used for scanning.
 
 ## Setting up a new sensor
 
@@ -88,7 +88,7 @@ that has its green "sync" button pressed and report the mac in the `mopeka_pro_c
 6. Bring up the state of entity `mopeka_pro_check.discovered`
 7. Look at the "State" and you will see a csv of MAC addresses for any sensor that reported the sync button was pressed.
 8. Now you can go to your configuration.yml and add the sensor.
-9. Reboot and the new entity should show up. 
+9. Reboot and the new entity should show up.
 
 ## Credits
 

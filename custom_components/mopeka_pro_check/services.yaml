@@ -1,0 +1,5 @@
+# Describe services made available by this integration
+
+discovered:
+  # Description of the service
+  description: Scans for 5 seconds looking for any Mopeka pro Check sensor reporting its green sync button pressed.  In the state value it will return a CSV of mac addresses for any sensors found.
