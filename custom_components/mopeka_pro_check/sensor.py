@@ -11,7 +11,7 @@ import logging
 import voluptuous as vol
 from typing import List, Callable, Optional
 
-from mopeka_pro_check.service import MopekaService, GetServiceInstance
+from mopeka_pro_check.service import MopekaService, GetServiceInstance, ServiceScanningMode
 from mopeka_pro_check.sensor import MopekaSensor
 
 from homeassistant.components.sensor import PLATFORM_SCHEMA  # type: ignore
@@ -51,7 +51,10 @@ from .const import (
 
 ###############################################################################
 
+DISCOVERY_SERVICE_NAME = "discovered"
+
 _LOGGER = logging.getLogger(__name__)
+
 
 DEVICES_SCHEMA = vol.Schema(
     {
@@ -93,6 +96,37 @@ def setup_platform(
     _LOGGER.debug("Starting Mopeka Tank Level Sensor")
 
     service: MopekaService = GetServiceInstance()
+
+
+    def ReportMopekaDevicesWithButtonPressed(call) -> None:
+        """ handle service call to discover sensors with their button pressed"""
+
+        ##
+        ##
+        ## This is really bad in that it calls sleep
+        ##
+        ## But given the infrequent use of this as it really is only
+        ## a setup helper to get the MAC of a new sensor
+        ## I am going to leave it until someone complains or has a PR that cleans
+        ## all this up.
+        ##
+        service.DoSensorDiscovery()
+        service.Start()
+        from time import sleep
+        sleep(5)
+        service.Stop()
+
+        # restore filtered mode scanning for known devices
+        service._scanning_mode = ServiceScanningMode.FILTERED_MODE
+        service.Start()
+
+        results = ""
+        for a in service.SensorDiscoveredList.keys():
+            results += a.address + ","
+        results = results.rstrip(",")
+        hass.states.set(DOMAIN + "." + DISCOVERY_SERVICE_NAME, results)
+
+
 
     def init_configured_devices() -> None:
         """Initialize configured mopeka devices."""
@@ -179,6 +213,8 @@ def setup_platform(
     service.SetHostControllerIndex(HciIndex)
 
     hass.bus.listen("homeassistant_stop", service.Stop)
+
+    hass.services.register(DOMAIN, DISCOVERY_SERVICE_NAME, ReportMopekaDevicesWithButtonPressed)
 
     # Initialize configured Mopeka devices
     init_configured_devices()

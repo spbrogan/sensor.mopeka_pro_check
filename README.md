@@ -73,6 +73,23 @@ sensor:
 | `scan_interval` | positive integer | `60` | The scan_interval in seconds during which the sensor readings are collected and transmitted to Home Assistant. The Mopeka device broadcast rate is configurable using the sensor buttons but this scan_interval helps to limit the amount of mostly duplicate data stored in  Home Assistant's database since tank level should not change that quickly |
 | `hci_device`| string | `hci0` | HCI device name used for scanning. |
 
+## Setting up a new sensor
+
+_New in Version 0.2.0_
+
+For convenience a service is implemented `mopeka_pro_check.discovered` that when called will pause scanning for 5 seconds, look for any mopeka sensor
+that has its green "sync" button pressed and report the mac in the `mopeka_pro_check.discovered` state.  To do this from Home Assistant UI do the following:
+
+1. Go to "Developer Tools"
+2. Go to "Service" tab
+3. Press the green button on your sensor 10 times quickly to get it out of mfg mode
+4. Press the "Call Service" button in Home Assistant and then press and hold the green button on your sensor.
+5. After 5 seconds go to the "States" tab
+6. Bring up the state of entity `mopeka_pro_check.discovered`
+7. Look at the "State" and you will see a csv of MAC addresses for any sensor that reported the sync button was pressed.
+8. Now you can go to your configuration.yml and add the sensor.
+9. Reboot and the new entity should show up. 
+
 ## Credits
 
 This sensor component was copied from [custom-components/sensor.groveetemp_bt_hci](https://github.com/Home-Is-Where-You-Hang-Your-Hack/sensor.goveetemp_bt_hci) at commit [84cd857ec71e5c076fb37f6748d514aed3c0d210](https://github.com/Home-Is-Where-You-Hang-Your-Hack/sensor.goveetemp_bt_hci/commit/84cd857ec71e5c076fb37f6748d514aed3c0d210)
