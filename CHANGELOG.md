@@ -1,7 +1,3 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
-
-## 0.1.0
-
-- Initial Release
+See release history in github <https://github.com/spbrogan/sensor.mopeka_pro_check/releases>
