@@ -16,10 +16,12 @@ CONF_HCI_DEVICE = "hci_device"
 CONF_MOPEKA_DEVICES = "mopeka_devices"
 CONF_TANK_TYPE = "tank_type"
 CONF_TANK_MAX_HEIGHT = "max_height"
+CONF_TANK_MIN_HEIGHT = "min_height"
 CONF_TANK_FIELD = "tank"
 
 CONF_TANK_TYPE_CUSTOM = "custom"
 CONF_TANK_TYPE_STD = "standard"
+
 #
 # HEIGHT in MM
 #
@@ -27,9 +29,9 @@ CONF_SUPPORTED_STD_TANKS_MAP = {
     # Where to get real answers for what height is full
 
     # trial and error and compare with Mopeka official app
-    "20lb_v": {CONF_TANK_MAX_HEIGHT: 302.84},   #452.12},  
-    "30lb_v": {CONF_TANK_MAX_HEIGHT: 410.0},   #601.98},  
-    "40lb_v": {CONF_TANK_MAX_HEIGHT: 498.62}    #744.22},
+    "20lb_v": {CONF_TANK_MAX_HEIGHT: 254, CONF_TANK_MIN_HEIGHT: 38.1},  
+    "30lb_v": {CONF_TANK_MAX_HEIGHT: 381, CONF_TANK_MIN_HEIGHT: 38.1}, 
+    "40lb_v": {CONF_TANK_MAX_HEIGHT: 508, CONF_TANK_MIN_HEIGHT: 38.1}
 }
 
 CONF_SUPPORTED_STD_TANK_NAMES = tuple(CONF_SUPPORTED_STD_TANKS_MAP.keys())
