@@ -196,7 +196,7 @@ def setup_platform(
             ma = device.GetReading()
 
             if ma != None:
-                if ma.ReadingQaulityStars >= 2:
+                if ma.ReadingQualityStars >= 2:
                     # If the reading quality is decent then compute the level
                     sensor._tank_level = ((ma.TankLevelInMM - device.min_height) * 100.0) / (device.max_height - device.min_height)
                     # round it to whole number
