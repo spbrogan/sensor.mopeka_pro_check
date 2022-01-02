@@ -42,6 +42,7 @@ from .const import (
     CONF_MOPEKA_DEVICES,
     CONF_TANK_TYPE,
     CONF_TANK_MAX_HEIGHT,
+    CONF_TANK_MIN_HEIGHT,
     CONF_SUPPORTED_STD_TANKS_MAP,
     CONF_TANK_TYPE_CUSTOM,
     CONF_TANK_TYPE_STD,
@@ -67,6 +68,7 @@ DEVICES_SCHEMA = vol.Schema(
             CONF_SUPPORTED_STD_TANK_NAMES
         ),
         vol.Optional(CONF_TANK_MAX_HEIGHT): cv.positive_float,
+        vol.Optional(CONF_TANK_MIN_HEIGHT): cv.positive_float,
     }
 )
 
@@ -143,12 +145,20 @@ def setup_platform(
             # find tank type
             tt = conf_dev.get(CONF_TANK_TYPE)
             if tt == CONF_TANK_TYPE_CUSTOM:
-                # if max height missing uses 20 lbs vertical tank
-                device.height = float(
+                # if max height or min height missing uses default tank values
+                device.max_height = float(
                     conf_dev.get(
                         CONF_TANK_MAX_HEIGHT,
                         CONF_SUPPORTED_STD_TANKS_MAP[DEFAULT_STD_TANK].get(
                             CONF_TANK_MAX_HEIGHT
+                        ),
+                    )
+                )
+                device.min_height = float(
+                    conf_dev.get(
+                        CONF_TANK_MIN_HEIGHT,
+                        CONF_SUPPORTED_STD_TANKS_MAP[DEFAULT_STD_TANK].get(
+                            CONF_TANK_MIN_HEIGHT
                         ),
                     )
                 )
@@ -157,8 +167,11 @@ def setup_platform(
                 ] = "n/a"
             else:
                 std_type = conf_dev.get(CONF_TANK_FIELD)
-                device.height = CONF_SUPPORTED_STD_TANKS_MAP[std_type].get(
+                device.max_height = CONF_SUPPORTED_STD_TANKS_MAP[std_type].get(
                     CONF_TANK_MAX_HEIGHT
+                )
+                device.min_height = CONF_SUPPORTED_STD_TANKS_MAP[std_type].get(
+                    CONF_TANK_MIN_HEIGHT
                 )
                 getattr(tank_sensor, "_device_state_attributes")[
                     CONF_TANK_FIELD
@@ -167,7 +180,7 @@ def setup_platform(
             getattr(tank_sensor, "_device_state_attributes")[CONF_TANK_TYPE] = tt
             getattr(tank_sensor, "_device_state_attributes")[
                 "tank_height"
-            ] = device.height
+            ] = device.max_height
 
             service.AddSensorToMonitor(device)
             add_entities((tank_sensor,))
@@ -181,10 +194,21 @@ def setup_platform(
         for device in service.SensorMonitoredList.values():
             sensor = device.ha_sensor
             ma = device.GetReading()
+
             if ma != None:
-                sensor._tank_level = min(
-                    (round(((ma.TankLevelInMM * 100.0) / device.height), 1), 100.0)
-                )
+                if ma.ReadingQualityStars >= 2:
+                    # If the reading quality is decent then compute the level
+                    sensor._tank_level = ((ma.TankLevelInMM - device.min_height) * 100.0) / (device.max_height - device.min_height)
+                    # round it to whole number
+                    sensor._tank_level = round(sensor._tank_level)
+                    # make sure it is greater than zero
+                    sensor._tank_level = max(sensor._tank_level, 0)
+                    # make sure it is less than 100
+                    sensor._tank_level = min(sensor._tank_level, 100)
+                else:
+                    sensor._tank_level = 0  
+                    # reading quality is bad.  just mark as zero
+                
                 getattr(sensor, ATTR)["rssi"] = ma.rssi
                 getattr(sensor, ATTR)["confidence_score"] = ma.ReadingQualityStars
                 getattr(sensor, ATTR)["temp_c"] = ma.TemperatureInCelsius

@@ -64,6 +64,7 @@ sensor:
         name: BBQ
         tank_type: "custom"
         max_height: 452.10
+        min_height: 23
 ```
 
 ### Additional configuration options
