@@ -162,7 +162,7 @@ def setup_platform(
                         ),
                     )
                 )
-                getattr(tank_sensor, "_device_state_attributes")[
+                getattr(tank_sensor, "_extra_state_attributes")[
                     CONF_TANK_FIELD
                 ] = "n/a"
             else:
@@ -173,12 +173,12 @@ def setup_platform(
                 device.min_height = CONF_SUPPORTED_STD_TANKS_MAP[std_type].get(
                     CONF_TANK_MIN_HEIGHT
                 )
-                getattr(tank_sensor, "_device_state_attributes")[
+                getattr(tank_sensor, "_extra_state_attributes")[
                     CONF_TANK_FIELD
                 ] = std_type
 
-            getattr(tank_sensor, "_device_state_attributes")[CONF_TANK_TYPE] = tt
-            getattr(tank_sensor, "_device_state_attributes")[
+            getattr(tank_sensor, "_extra_state_attributes")[CONF_TANK_TYPE] = tt
+            getattr(tank_sensor, "_extra_state_attributes")[
                 "tank_height"
             ] = device.max_height
 
@@ -189,7 +189,7 @@ def setup_platform(
         """Discover Bluetooth LE devices."""
         # _LOGGER.debug("Discovering Bluetooth LE devices")
 
-        ATTR = "_device_state_attributes"
+        ATTR = "_extra_state_attributes"
 
         for device in service.SensorMonitoredList.values():
             sensor = device.ha_sensor
@@ -260,7 +260,7 @@ class TankLevelSensor(Entity):
         self._tank_level = None
         self._unique_id = "mopeka_" + mac.replace(":", "")
         self._name = name
-        self._device_state_attributes = {}
+        self._extra_state_attributes = {}
 
     @property
     def name(self) -> str:
@@ -288,9 +288,9 @@ class TankLevelSensor(Entity):
         return False
 
     @property
-    def device_state_attributes(self):
+    def extra_state_attributes(self):
         """Return the state attributes."""
-        return self._device_state_attributes
+        return self._extra_state_attributes
 
     @property
     def unique_id(self) -> str:
