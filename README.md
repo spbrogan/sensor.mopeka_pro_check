@@ -1,6 +1,6 @@
 # sensor.mopeka_pro_check
 
-[![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/custom-components/hacs)
+[![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/hacs/integration)
 
 Home Assistant custom component to support Mopeka Pro Check Tank Level Sensors
 A custom component for [Home Assistant](https://www.home-assistant.io) that listens for the advertisement message broadcast by Mopeka Bluetooth propane tank level sensors.
