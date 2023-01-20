@@ -1,5 +1,14 @@
 # sensor.mopeka_pro_check
 
+**THIS INTEGRATION NO LONGER WORKS AS OF SUMMER 2022!!!**  
+Home Assistant has added native BLE support and I haven't yet written a new integration.
+I hope to do that soon.  Follow this discussion for updates or comments. <https://github.com/spbrogan/sensor.mopeka_pro_check/discussions/22>
+
+There is a great esphome integration that works well and is easy to use.  
+Please checkout the esphome integration here <https://esphome.io/components/sensor/mopeka_pro_check.html?highlight=mopeka>
+
+
+
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/hacs/integration)
 
 Home Assistant custom component to support Mopeka Pro Check Tank Level Sensors
